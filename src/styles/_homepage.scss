@@ -1,0 +1,119 @@
+.home-wrap {
+  img {
+    max-width: 1440px;
+  }
+
+  .banner {
+    position: relative;
+
+    .banner-txt {
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      width: 100%;
+      text-align: center;
+
+      .para {
+        color: #3a82f7;
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 600;
+        margin: 0;
+
+        @media (min-width: 450px) {
+          font-size: 5vw;
+        }
+
+        @media (min-width: 992px) {
+          font-size: 3rem;
+        }
+      }
+    }
+
+    .banner-btn {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translate(-50%, 0);
+
+      a {
+        background-color: #1e90ff;
+        color: white;
+        border-radius: 6px;
+        padding: 10px 20px;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .search-wrap {
+    background-color: #f7f7f7;
+    margin: 20px auto;
+    padding: 70px 20px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+
+    @media (min-width: 992px) {
+      margin: 40px auto;
+    }
+
+    form {
+      max-width: 600px;
+      position: relative;
+
+      &::after {
+        content: "";
+        width: 50px;
+        height: 50px;
+        display: block;
+        background: url("../../public/search-icon.svg") no-repeat right 16px
+          center;
+        background-size: 20px;
+        position: absolute;
+        right: 10%;
+        top: 0;
+      }
+    }
+
+    input {
+      width: 80%;
+      max-width: 600px;
+      padding: 14px 20px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  }
+
+  .categories {
+    h2 {
+      text-align: center;
+      font-weight: 500;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 0;
+
+      @media (min-width: 992px) {
+        flex-direction: row;
+      }
+
+      li {
+        background: grey;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 10px 15px;
+        max-width: 120px;
+      }
+    }
+  }
+}
