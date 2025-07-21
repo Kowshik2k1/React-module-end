@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { setToken } from 'utils/auth';
 
 const Signup = ({ show, onHide }) => {
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const navigate = useNavigate();
+
+  const handleSignup = async () => {
+    try {
+      const res = await axios.post('https://jwt-assignment1.onrender.com/api/signup', form);
+      alert('Signup successful');
+      setToken(res.data.token);
+      setForm({name: '', email: '', password: ''})
+      onHide();
+      navigate('/cart');
+    } catch (err) {
+      alert('Signup failed');
+    }
+  };
+
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
@@ -10,19 +29,18 @@ const Signup = ({ show, onHide }) => {
 
       <Modal.Body>
         <Form>
+          <Form.Group className="mb-3" controlId="name">
+            <Form.Label>Name</Form.Label>
+            <Form.Control value={form.name} type="text" onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Enter name" />
+          </Form.Group>
           <Form.Group className="mb-3" controlId="signupEmail">
             <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
+            <Form.Control value={form.email} type="email" onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Enter email" />
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="signupPassword">
             <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="signupConfirm">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control type="password" placeholder="Confirm Password" />
+            <Form.Control type="password" onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Password" />
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -31,7 +49,7 @@ const Signup = ({ show, onHide }) => {
         <Button variant="secondary" onClick={onHide}>
           Cancel
         </Button>
-        <Button variant="primary">
+        <Button variant="primary" onClick={handleSignup}>
           Sign Up
         </Button>
       </Modal.Footer>

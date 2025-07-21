@@ -1,21 +1,57 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { CartContext } from "context/CartContext";
 import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { getToken } from "utils/auth";
 
 function Checkout() {
   const { cartItems, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    paymentMethod: "",
+  });
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
   );
 
-  const handleCheckout = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckout = async (e) => {
     e.preventDefault();
-    navigate("/thankyou");
-    clearCart();
+
+    try {
+      await axios.post(
+        "https://jwt-assignment1.onrender.com/api/add-to-cart",
+        {
+          ...formData,
+          cartItems,
+          totalAmount,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
+
+      clearCart();
+      navigate("/thankyou");
+    } catch (err) {
+      alert("Access Denied or Error: " + (err?.response?.data?.message || err.message));
+    }
   };
 
   return (
@@ -26,20 +62,48 @@ function Checkout() {
       <Form onSubmit={handleCheckout}>
         <Form.Group className="mb-3">
           <Form.Label>Full Name</Form.Label>
-          <Form.Control type="text" required placeholder="Enter your name" />
+          <Form.Control
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            placeholder="Enter your name"
+          />
         </Form.Group>
+
         <Form.Group className="mb-3" controlId="signupEmail">
           <Form.Label>Email address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" />
+          <Form.Control
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder="Enter email"
+          />
         </Form.Group>
+
         <Form.Group className="mb-3">
           <Form.Label>Address</Form.Label>
-          <Form.Control as="textarea" rows={3} required />
+          <Form.Control
+            as="textarea"
+            rows={3}
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+          />
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Payment Method</Form.Label>
-          <Form.Select required>
+          <Form.Select
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleChange}
+            required
+          >
             <option value="">Select</option>
             <option value="cod">Cash on Delivery</option>
             <option value="upi">UPI</option>

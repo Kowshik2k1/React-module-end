@@ -8,9 +8,9 @@ import Search from 'components/Search/Search';
 import { CartProvider } from "context/CartContext";
 import Checkout from 'components/Checkout/Checkout';
 import Cart from 'components/Cart/Cart';
-import CheckoutPage from 'Pages/Checkout';
 import ThankYou from 'Pages/ThankYou';
-
+import ProtectedRoute from 'ProtectedRoute';
+import Unauthorized from 'Pages/Unauthorized';
 
 function App() {
   return (
@@ -22,9 +22,16 @@ function App() {
           <Route path="/shop" element={<ShopNow />} />
           <Route path="/search" element={<Search />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/thankyou" element={<ThankYou />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
         </Routes>
         <Footer />
       </Router>

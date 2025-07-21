@@ -1,131 +1,111 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import "./style.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { CartContext } from "context/CartContext";
-import { useLocation } from "react-router-dom";
 import Login from "components/Login/Login";
 import Signup from "components/Signup/Signup";
+import { isAuthenticated, logout, getUserName } from "utils/auth";
 
 function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [show, setShow] = useState(false);
-  const [isHome, setIsHome] = useState();
   const { cartItems } = useContext(CartContext);
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
-  const location = useLocation();
+  const navigate = useNavigate();
+  const isLoggedIn = isAuthenticated();
 
-  // To toggle the hamburger menu in mobile
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   const handleClick = () => {
     setShow(!show);
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
-    if (location.pathname === "/") {
-      setIsHome(true);
-    } else {
-      setIsHome(false);
-    }
-  }, [location.pathname]);
-
   return (
     <div className="header-wrap site-container">
       <div className="logo">
         <Link to="/">
-          <img
-            src="/logo.png"
-            width="100"
-            alt="KMart Logo"
-            title="KMart Logo"
-          />
+          <img src="/logo.png" width="100" alt="KMart Logo" title="KMart Logo" />
         </Link>
       </div>
+
       <div className="mobile-menu-wrap">
         <div className="mobile-menu d-lg-none" onClick={handleClick}>
           {isOpen ? (
-            <img src="/close-icon.png" alt="Close" width={50} height={50} />
+            <img src="/close-icon.png" alt="Close menu" width={50} height={50} />
           ) : (
-            <img
-              src="/hamburger-open.svg"
-              alt="Hamburger"
-              width={50}
-              height={50}
-            />
+            <img src="/hamburger-open.svg" alt="Open menu" width={50} height={50} />
           )}
         </div>
+
         {/* Mobile menu */}
         {show && (
           <div className="mobile-menu-content">
             <div className="menu">
               <ul>
-                {isHome && (
-                  <>
-                    <li>
-                      <a href="#shop-now" onClick={handleClick}>
-                        Shop now
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#search" onClick={handleClick}>
-                        Search
-                      </a>
-                    </li>
-                  </>
-                )}
                 <li>
-                  <Link to="/checkout" onClick={handleClick}>
-                    Checkout
-                  </Link>
+                  <Link to="/shop" onClick={handleClick}>Shop now</Link>
+                </li>
+                <li>
+                  <Link to="/search" onClick={handleClick}>Search</Link>
+                </li>
+                <li>
+                  <Link to="/checkout" onClick={handleClick}>Checkout</Link>
                 </li>
               </ul>
-              <div className="login">
-                <button className="btn" onClick={() => setShowLogin(true)}>
-                  Login
-                </button>
-                <Login show={showLogin} onHide={() => setShowLogin(false)} />
-              </div>
-              <div className="login">
-                <button className="btn" onClick={() => setShowSignup(true)}>
-                  Sign up
-                </button>
-                <Signup show={showSignup} onHide={() => setShowSignup(false)} />
-              </div>
+
+              {!isLoggedIn && (
+                <>
+                  <div className="login">
+                    <button className="btn" onClick={() => setShowLogin(true)}>Login</button>
+                  </div>
+                  <div className="login">
+                    <button className="btn" onClick={() => setShowSignup(true)}>Sign up</button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Desktop menu */}
       <div className="menu d-none align-items-center d-lg-flex">
         <ul>
-          {isHome && (
-            <>
-              <li>
-                <a href="#shop-now">Shop now</a>
-              </li>
-              <li>
-                <a href="#search">Search</a>
-              </li>
-            </>
-          )}
+          <li>
+            <Link to="/shop">Shop now</Link>
+          </li>
+          <li>
+            <Link to="/search">Search</Link>
+          </li>
           <li>
             <Link to="/checkout">Checkout</Link>
           </li>
         </ul>
-        <div className="login d-none d-lg-block">
-          <button className="btn" onClick={() => setShowLogin(true)}>
-            Login
-          </button>
-          <Login show={showLogin} onHide={() => setShowLogin(false)} />
-        </div>
-        <div className="login d-none d-lg-block">
-          <button className="btn" onClick={() => setShowSignup(true)}>
-            Sign up
-          </button>
-          <Signup show={showSignup} onHide={() => setShowSignup(false)} />
-        </div>
+
+        {isLoggedIn ? (
+          <>
+            <span style={{ marginRight: 10 }}>Welcome, {getUserName()}</span>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          <>
+            <div className="login d-none d-lg-block">
+              <button className="btn" onClick={() => setShowLogin(true)}>Login</button>
+            </div>
+            <div className="login d-none d-lg-block">
+              <button className="btn" onClick={() => setShowSignup(true)}>Sign up</button>
+            </div>
+          </>
+        )}
       </div>
+
       <div className="cart-icon d-none d-lg-block mx-3">
         <Link to="/cart" className="position-relative text-dark">
           <FaShoppingCart size={24} />
@@ -136,6 +116,9 @@ function Header() {
           )}
         </Link>
       </div>
+
+      <Login show={showLogin} onHide={() => setShowLogin(false)} />
+      <Signup show={showSignup} onHide={() => setShowSignup(false)} />
     </div>
   );
 }
